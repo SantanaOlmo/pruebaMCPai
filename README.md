@@ -45,3 +45,46 @@ Este proyecto incluye un **script en Python (`updateReadme.py`)** que permite ac
     python updateReadme.py
 4. Verás en consola la confirmación:
     "README actualizado correctamente en GitHub ✅"
+
+
+
+# Automatización de la actualización del README con Python
+
+Este script (`updateReadme.py`) permite actualizar automáticamente el README de un repositorio de GitHub usando el contenido de un README local, sin necesidad de usar Git manualmente.
+
+## Cómo funciona
+
+### 1. Leer contenido local
+with open(ruta_local, "r", encoding="utf-8") as f:
+    nuevo_contenido = f.read()
+
+- `ruta_local` es la ruta del README local (por ejemplo "README.md").  
+- `open(..., "r", encoding="utf-8")` abre el archivo en modo lectura con codificación UTF-8.  
+- `with ... as f:` asegura que el archivo se cierre automáticamente al terminar.  
+- `f.read()` lee todo el contenido del archivo y lo guarda en `nuevo_contenido`.  
+
+### 2. Actualizar README en GitHub
+repo.update_file(
+    path="README.md",
+    message="Actualización automática del README",
+    content=nuevo_contenido,
+    sha=file.sha
+)
+
+- `repo.update_file()` sobrescribe un archivo en el repo remoto.  
+- Parámetros:
+  - `path="README.md"` → ruta del archivo en GitHub.
+  - `message="..."` → mensaje del commit que aparecerá en GitHub.
+  - `content=nuevo_contenido` → el nuevo contenido que quieres subir.
+  - `sha=file.sha` → SHA de la versión actual del archivo remoto, necesario para que GitHub sepa qué versión se está actualizando.
+- Esto genera un commit automático:
+  - El mensaje del commit es el que pasaste en `message`.
+  - El autor del commit es el usuario asociado al token.
+  - El commit incluye solo los cambios en el README, sin afectar otros archivos.
+- SHA: cada commit recibe un SHA único; el SHA pasado como parámetro identifica la versión del archivo que se está actualizando y asegura que no se sobrescriban cambios de otros commits.  
+
+### Resumen
+1. Se lee el README local y se guarda en `nuevo_contenido`.
+2. `update_file()` sube automáticamente este contenido al repo remoto.
+3. GitHub crea un commit con el mensaje especificado, usando el usuario del token.
+4. No necesitas usar `git add`, `git commit` ni `git push` manualmente.
